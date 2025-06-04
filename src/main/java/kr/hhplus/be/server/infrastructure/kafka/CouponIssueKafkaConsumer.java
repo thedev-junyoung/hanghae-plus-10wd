@@ -24,7 +24,7 @@ public class CouponIssueKafkaConsumer {
     public static final List<ConsumerRecord<String, String>> receivedDltMessages = new CopyOnWriteArrayList<>();
 
     @KafkaListener(
-            topics = "coupon.issue",
+            topics = "coupon.issue.requested",
             groupId = "coupon-issue-group",
             containerFactory = "couponKafkaListenerFactory"
     )

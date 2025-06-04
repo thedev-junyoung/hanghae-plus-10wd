@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.outbox;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OutboxRepository {
@@ -14,4 +15,5 @@ public interface OutboxRepository {
 
     void deleteAll();
 
+    List<OutboxMessage> findTop100ByOccurredAtAfterOrderByOccurredAtAsc(LocalDateTime lastTime);
 }

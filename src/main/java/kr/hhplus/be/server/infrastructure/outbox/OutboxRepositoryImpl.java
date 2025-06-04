@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.outbox.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -37,5 +38,11 @@ public class OutboxRepositoryImpl implements OutboxRepository {
     @Override
     public void deleteAll() {
         jpaRepository.deleteAll();
+    }
+
+    @Override
+    public List<OutboxMessage> findTop100ByOccurredAtAfterOrderByOccurredAtAsc(LocalDateTime lastTime) {
+        return jpaRepository.findTop100ByOccurredAtAfterOrderByOccurredAtAsc(lastTime).stream()
+                .toList();
     }
 }

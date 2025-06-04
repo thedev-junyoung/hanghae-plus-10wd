@@ -42,7 +42,7 @@ public class CouponController implements CouponAPI {
     @Override
     public ResponseEntity<Void> asyncIssueCoupon(@Valid @RequestBody CouponRequest request) {
         IssueLimitedCouponCommand command = request.toCommand();
-        couponUseCase.enqueueLimitedCoupon(command);
+        couponUseCase.requestCoupon(command);
         return ResponseEntity.accepted().build();
     }
 

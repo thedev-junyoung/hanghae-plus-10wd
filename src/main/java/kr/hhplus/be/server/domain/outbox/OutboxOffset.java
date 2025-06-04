@@ -11,29 +11,27 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "outbox_offset")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "outbox_offset")
 public class OutboxOffset {
-
     @Id
-    @Column(name = "topic_name", nullable = false)
+    @Column(nullable = false, unique = true, name = "topic_name")
     private String topicName;
 
-    @Column(name = "last_processed_id", nullable = false)
-    private String lastProcessedId;
+    @Column(nullable = false, name = "last_processed_occurred_at")
+    private LocalDateTime lastProcessedOccurredAt;
 
-    @Column(name = "updated_at", nullable = false, updatable = false, insertable = false)
-    private LocalDateTime updatedAt;
+    public static OutboxOffset create(String topic, LocalDateTime init) {
+        OutboxOffset o = new OutboxOffset();
+        o.topicName = topic;
+        o.lastProcessedOccurredAt = init;
+        return o;
+    }
 
-
-    public static OutboxOffset create(String topicName, String lastProcessedId) {
-        return new OutboxOffset(topicName, lastProcessedId, LocalDateTime.now());
+    public void updateLastProcessedOccurredAt(LocalDateTime time) {
+        this.lastProcessedOccurredAt = time;
     }
 
 
-    public void updateLastProcessedId(String newId) {
-        this.lastProcessedId = newId;
-    }
 }
+
