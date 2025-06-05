@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface OutboxJpaRepository extends JpaRepository<OutboxMessage, String> {
     List<OutboxMessage> findTop100ByIdGreaterThanOrderByIdAsc(String lastProcessedId);
 
-    Optional<OutboxMessage> findTop100ByOccurredAtAfterOrderByOccurredAtAsc(LocalDateTime lastTime);
+    List<OutboxMessage> findTop100ByOccurredAtAfterOrderByOccurredAtAsc(LocalDateTime lastTime);
 }
