@@ -93,6 +93,8 @@ services:
     volumes:
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./data/grafana:/var/lib/grafana
+
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
@@ -148,7 +150,22 @@ services:
     networks:
       - redis-net
 
-
+  # docker-compose.yml 예시
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    container_name: kafka-exporter
+    ports:
+      - "9308:9308"
+    command:
+      - "--kafka.server=kafka:9093"
+    depends_on:
+      - kafka
+    networks:
+      - redis-net
+#
+#    command:
+#      - "--kafka.server=kafka:9093"
+#      - "--log.level=info"
 
 
 networks:

@@ -25,6 +25,8 @@ public class StockService {
         ProductStock stock = productStockRepository.findByProductIdAndSize(command.productId(), command.size())
                 .orElseThrow(() -> new ProductException.NotFoundException(command.productId()));
         if (stock.getStockQuantity() < command.quantity()) {
+            log.info("[비즈니스 로직] 재고 부족 - 상품 ID: {}, 사이즈: {}, 요청 수량: {}, 현재 재고: {}",
+                     command.productId(), command.size(), command.quantity(), stock.getStockQuantity());
             throw new ProductException.InsufficientStockException();
         }
 
