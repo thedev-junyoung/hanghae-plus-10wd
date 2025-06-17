@@ -39,20 +39,31 @@ VALUES
 ;
 
 -- Balance
-INSERT INTO balance (id, user_id, amount, created_at, updated_at) VALUES
-(1, 100, 500000, NOW(), NOW()),
-(2, 101, 300000, NOW(), NOW()),
-(3, 102, 300000, NOW(), NOW()),
-(4, 103, 300000, NOW(), NOW()),
-(5, 104, 300000, NOW(), NOW()),
-(6, 105, 300000, NOW(), NOW()),
-(7, 106, 300000, NOW(), NOW()),
-(8, 107, 300000, NOW(), NOW()),
-(9, 108, 300000, NOW(), NOW()),
-(10, 109, 300000, NOW(), NOW());
+# INSERT INTO balance (id, user_id, amount, created_at, updated_at) VALUES
+# (1, 100, 500000, NOW(), NOW()),
+# (2, 101, 300000, NOW(), NOW()),
+# (3, 102, 300000, NOW(), NOW()),
+# (4, 103, 300000, NOW(), NOW()),
+# (5, 104, 300000, NOW(), NOW()),
+# (6, 105, 300000, NOW(), NOW()),
+# (7, 106, 300000, NOW(), NOW()),
+# (8, 107, 300000, NOW(), NOW()),
+# (9, 108, 300000, NOW(), NOW()),
+# (10, 109, 300000, NOW(), NOW());
 
 INSERT INTO balance (user_id, amount, created_at, updated_at)
-SELECT 10000 + id, 100000, NOW(), NOW()
+SELECT 100 + id, 3000000000000000, NOW(), NOW()
+FROM (
+         SELECT @row := @row + 1 AS id
+         FROM information_schema.tables t1,
+              information_schema.tables t2,
+              (SELECT @row := 0) r
+         LIMIT 500
+     ) temp;
+
+
+INSERT INTO balance (user_id, amount, created_at, updated_at)
+SELECT 10000 + id, 3000000000000000, NOW(), NOW()
 FROM (
          SELECT @row := @row + 1 AS id
          FROM information_schema.tables t1,
@@ -71,16 +82,25 @@ VALUES
 
 
 -- Coupon Issue
-INSERT INTO coupon_issue (id, user_id, coupon_id, issued_at, is_used)
-VALUES
-    (1, 100, 1, NOW(), false),
-    (2, 100, 2, NOW(), false);
-
+INSERT INTO coupon_issue (user_id, coupon_id, issued_at, is_used)
+SELECT id, 1, NOW(), false
+FROM (
+         SELECT 100 AS id UNION ALL
+         SELECT 101 UNION ALL
+         SELECT 102 UNION ALL
+         SELECT 103 UNION ALL
+         SELECT 104 UNION ALL
+         SELECT 105 UNION ALL
+         SELECT 106 UNION ALL
+         SELECT 107 UNION ALL
+         SELECT 108 UNION ALL
+         SELECT 109
+     ) AS users;
 -- Orders
-INSERT INTO orders (id, user_id, total_amount, status, created_at)
-VALUES
-    ('order-1', 100, 398000, 'CONFIRMED', NOW()),
-    ('order-2', 101, 169000, 'CREATED', NOW());
+# INSERT INTO orders (id, user_id, total_amount, status, created_at)
+# VALUES
+#     ('order-1', 100, 398000, 'CONFIRMED', NOW()),
+#     ('order-2', 101, 169000, 'CREATED', NOW());
 
 
 -- Order Item
@@ -204,32 +224,37 @@ FROM product p
 WHERE RAND() < 0.2;
 
 
--- Orders (10만 건)
+# 1. order-1 ~ order-500까지 생성
 INSERT INTO orders (id, user_id, total_amount, status, created_at)
 SELECT
-    CONCAT('order-', UUID()),
-    FLOOR(1 + RAND() * 50000), -- 5만 명 유저
-    FLOOR(50000 + RAND() * 200000),
-    ELT(FLOOR(1 + RAND() * 3), 'CREATED', 'CONFIRMED', 'CANCELLED'),
-    DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 30) DAY)
+    CONCAT('order-', n.id),
+    100 + n.id, -- 사용자 ID: 101 ~ 600
+    100000,
+    'CREATED',
+    NOW()
 FROM (
-         SELECT 1 FROM information_schema.tables t1, information_schema.tables t2 LIMIT 100000
-     ) dummy;
+         SELECT @row := @row + 1 AS id
+         FROM information_schema.tables t1,
+              information_schema.tables t2,
+              (SELECT @row := 0) r
+         LIMIT 500
+     ) n;
 
-
-
--- Order Items (평균 2~3개씩 → 약 25만 개)
-INSERT INTO order_item (product_id, quantity, size, price, order_id)
+# 해당 order마다 order_item 도 함께 넣기
+INSERT INTO order_item (order_id, product_id, quantity, size, price)
 SELECT
-    FLOOR(1 + RAND() * 100000),
-    FLOOR(1 + RAND() * 3),
-    ELT(FLOOR(1 + RAND() * 4), 250, 260, 270, 280),
-    FLOOR(10000 + RAND() * 90000),
-    o.id
-FROM orders o
-         JOIN (
-    SELECT 1 AS dummy UNION ALL SELECT 2 UNION ALL SELECT 3
-) AS repeater;
+    CONCAT('order-', n.id),
+    1,
+    1,
+    270,
+    100000
+FROM (
+         SELECT @row := @row + 1 AS id
+         FROM information_schema.tables t1,
+              information_schema.tables t2,
+              (SELECT @row := 0) r
+         LIMIT 500
+     ) n;
 
 
 
